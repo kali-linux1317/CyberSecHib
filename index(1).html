@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSec Learning Hub | Master Kali Linux</title>
+    <style>
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a192f;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease-out;
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 10px solid #1e90ff;
+            border-top: 10px solid #ff3e41;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        
+        .loading-progress {
+            width: 300px;
+            height: 5px;
+            background-color: #1a365d;
+            margin-top: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #1e90ff, #ff3e41);
+            transition: width 0.3s ease;
+        }
+        
+        /* Main Website Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+            display: none; /* Hidden until loading completes */
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0a192f, #172a45);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #64ffda;
+            cursor: pointer;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: #ccd6f6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #64ffda;
+        }
+        
+        .hero {
+            background: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center;
+            background-size: cover;
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 25, 47, 0.8);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            max-width: 600px;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #ccd6f6;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e90ff, #ff3e41);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #64ffda;
+            color: #64ffda;
+            margin-left: 1rem;
+        }
+        
+        .features {
+            padding: 5rem 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            color: #0a192f;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: #f5f7fa;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #1e90ff;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #0a192f;
+        }
+        
+        .tools-section {
+            padding: 5rem 0;
+            background-color: #f5f7fa;
+        }
+        
+        .tool-categories {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            background: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .category-btn.active, .category-btn:hover {
+            background: linear-gradient(90deg, #1e90ff, #ff3e41);
+            color: white;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .tool-img {
+            height: 150px;
+            background-color: #0a192f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .tool-content {
+            padding: 1.5rem;
+        }
+        
+        .tool-content h3 {
+            margin: 0 0 0.5rem 0;
+            color: #0a192f;
+        }
+        
+        .tool-category {
+            display: inline-block;
+            background: #e6f7ff;
+            color: #1e90ff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        /* Login/Signup Form */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #0a192f;
+        }
+        
+        .auth-form input {
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .auth-form button {
+            margin-top: 1rem;
+        }
+        
+        /* Tool Detail Page */
+        .tool-detail {
+            display: none;
+        }
+        
+        .back-to-tools {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #1e90ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        footer {
+            background: #0a192f;
+            color: #ccd6f6;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            color: #64ffda;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-column ul li a {
+            color: #ccd6f6;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: #64ffda;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #1f2e4a;
+            color: #8892b0;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+            
+            .btn-outline {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div class="loading-text">Initializing CyberSec Learning Hub...</div>
+        <div class="loading-progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Login/Signup Modal -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <div id="login-form" class="auth-form">
+                <h2>Login to Your Account</h2>
+                <input type="email" id="login-email" placeholder="Email Address" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" class="btn">Login</button>
+                <p style="text-align: center; margin-top: 1rem;">Don't have an account? <a href="#" id="show-signup">Sign up</a></p>
+            </div>
+            <div id="signup-form" class="auth-form" style="display: none;">
+                <h2>Create Your Account</h2>
+                <input type="text" id="signup-name" placeholder="Full Name" required>
+                <input type="email" id="signup-email" placeholder="Email Address" required>
+                <input type="password" id="signup-password" placeholder="Create Password" required>
+                <input type="password" id="signup-confirm" placeholder="Confirm Password" required>
+                <button type="submit" class="btn">Sign Up</button>
+                <p style="text-align: center; margin-top: 1rem;">Already have an account? <a href="#" id="show-login">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Website Content -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo" id="home-link">CyberSec Hub</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#tools">Tools</a></li>
+                    <li><a href="#courses">Courses</a></li>
+                    <li><a href="#challenges">Challenges</a></li>
+                    <li><a href="#community">Community</a></li>
+                    <li><button class="btn" id="login-btn">Login</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Master Cybersecurity with Kali Linux</h1>
+                <p>Access 500+ tools, hands-on labs, and expert-led courses to become a cybersecurity professional. Learn ethical hacking, penetration testing, and defense strategies.</p>
+                <button class="btn" id="signup-btn">Start Learning for Free</button>
+                <button class="btn btn-outline" id="explore-btn">Explore Tools</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose CyberSec Hub</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Comprehensive Toolset</h3>
+                    <p>Access all 600+ tools available in Kali Linux with detailed documentation, usage examples, and practical scenarios.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Structured Learning Paths</h3>
+                    <p>Follow our expert-designed curriculum from beginner to advanced levels with hands-on labs and real-world projects.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💻</div>
+                    <h3>Interactive Labs</h3>
+                    <p>Practice in our cloud-based virtual labs with vulnerable machines and realistic scenarios - no setup required.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Capture The Flag</h3>
+                    <p>Test your skills with our constantly updated CTF challenges and compete with other learners.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍💻</div>
+                    <h3>Expert Community</h3>
+                    <p>Get help from our community of cybersecurity professionals and collaborate on projects.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Career Pathways</h3>
+                    <p>Prepare for industry certifications like OSCP, CEH, and CISSP with our specialized tracks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tools-section" id="tools">
+        <div class="container">
+            <h2 class="section-title">Explore 500+ Kali Linux Tools</h2>
+            <div class="tool-categories">
+                <button class="category-btn active" data-category="all">All Tools</button>
+                <button class="category-btn" data-category="info">Information Gathering</button>
+                <button class="category-btn" data-category="vuln">Vulnerability Analysis</button>
+                <button class="category-btn" data-category="wireless">Wireless Attacks</button>
+                <button class="category-btn" data-category="web">Web Applications</button>
+                <button class="category-btn" data-category="exploit">Exploitation Tools</button>
+                <button class="category-btn" data-category="forensics">Forensics</button>
+                <button class="category-btn" data-category="password">Password Attacks</button>
+                <button class="category-btn" data-category="reverse">Reverse Engineering</button>
+                <button class="category-btn" data-category="reporting">Reporting Tools</button>
+                <button class="category-btn" data-category="sniffing">Sniffing & Spoofing</button>
+            </div>
+            
+            <div class="tools-grid" id="tools-container">
+                <!-- Tool cards will be generated by JavaScript -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <button class="btn" id="load-more-btn">Load More Tools</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tool Detail View (hidden by default) -->
+    <section class="tools-section" id="tool-detail-view" style="display: none;">
+        <div class="container">
+            <a href="#" class="back-to-tools" id="back-to-tools">&larr; Back to all tools</a>
+            <div class="tool-detail-content">
+                <h2 id="tool-detail-name">Tool Name</h2>
+                <div class="tool-category" id="tool-detail-category">Category</div>
+                <div class="tool-detail-meta">
+                    <span>Difficulty: <span id="tool-detail-difficulty">Intermediate</span></span>
+                    <span> | </span>
+                    <span>Last Updated: <span id="tool-detail-updated">2023-06-15</span></span>
+                </div>
+                
+                <div class="tool-detail-description">
+                    <h3>Description</h3>
+                    <p id="tool-detail-description">Detailed description of the tool will appear here.</p>
+                </div>
+                
+                <div class="tool-detail-installation">
+                    <h3>Installation</h3>
+                    <pre id="tool-detail-installation"><code>sudo apt install tool-name</code></pre>
+                </div>
+                
+                <div class="tool-detail-usage">
+                    <h3>Basic Usage</h3>
+                    <pre id="tool-detail-usage"><code>tool-name [options] target</code></pre>
+                </div>
+                
+                <div class="tool-detail-examples">
+                    <h3>Examples</h3>
+                    <div id="tool-detail-examples">
+                        <p>Example commands will appear here.</p>
+                    </div>
+                </div>
+                
+                <button class="btn" id="start-lab-btn">Start Interactive Lab</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>CyberSec Hub</h3>
+                    <p>Your comprehensive platform for learning cybersecurity with Kali Linux. 500+ tools, hands-on labs, and expert-led courses.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Learning Paths</h3>
+                    <ul>
+                        <li><a href="#">Beginner Track</a></li>
+                        <li><a href="#">Penetration Testing</a></li>
+                        <li><a href="#">Ethical Hacking</a></li>
+                        <li><a href="#">Digital Forensics</a></li>
+                        <li><a href="#">Certification Prep</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Tool Documentation</a></li>
+                        <li><a href="#">Cheat Sheets</a></li>
+                        <li><a href="#">Video Tutorials</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Community Forum</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2023 CyberSec Learning Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample tool data (in a real app, this would come from a database)
+        const toolsData = [
+            {
+                id: 1,
+                name: "Nmap",
+                category: "info",
+                categoryName: "Information Gathering",
+                description: "Network discovery and security auditing tool. Scan networks to identify hosts and services.",
+                difficulty: "Beginner",
+                lastUpdated: "2023-06-10",
+                installation: "sudo apt install nmap",
+                usage: "nmap [options] target",
+                examples: [
+                    "nmap -sS 192.168.1.1 (Stealth scan)",
+                    "nmap -O 192.168.1.1 (OS detection)",
+                    "nmap -sV 192.168.1.1 (Service version detection)"
+                ]
+            },
+            {
+                id: 2,
+                name: "Metasploit Framework",
+                category: "exploit",
+                categoryName: "Exploitation Tools",
+                description: "Penetration testing platform that enables you to find, exploit, and validate vulnerabilities.",
+                difficulty: "Intermediate",
+                lastUpdated: "2023-06-15",
+                installation: "sudo apt install metasploit-framework",
+                usage: "msfconsole",
+                examples: [
+                    "use exploit/multi/handler",
+                    "set payload windows/meterpreter/reverse_tcp",
+                    "exploit"
+                ]
+            },
+            {
+                id: 3,
+                name: "Wireshark",
+                category: "sniffing",
+                categoryName: "Sniffing & Spoofing",
+                description: "Network protocol analyzer that lets you capture and interactively browse network traffic.",
+                difficulty: "Beginner",
+                lastUpdated: "2023-05-20",
+                installation: "sudo apt install wireshark",
+                usage: "wireshark [options]",
+                examples: [
+                    "wireshark (Launch GUI)",
+                    "tshark -i eth0 (Command-line version)",
+                    "Capture filter: 'tcp port 80'"
+                ]
+            },
+            {
+                id: 4,
+                name: "Burp Suite",
+                category: "web",
+                categoryName: "Web Applications",
+                description: "Integrated platform for performing security testing of web applications.",
+                difficulty: "Intermediate",
+                lastUpdated: "2023-06-01",
+                installation: "Download from https://portswigger.net/burp",
+                usage: "java -jar burpsuite.jar",
+                examples: [
+                    "Configure browser proxy to 127.0.0.1:8080",
+                    "Intercept HTTP requests",
+                    "Use Scanner to find vulnerabilities"
+                ]
+            },
+            {
+                id: 5,
+                name: "John the Ripper",
+                category: "password",
+                categoryName: "Password Attacks",
+                description: "Fast password cracker with support for hundreds of hash and cipher types.",
+                difficulty: "Beginner",
+                lastUpdated: "2023-05-15",
+                installation: "sudo apt install john",
+                usage: "john [options] hashfile",
+                examples: [
+                    "john --wordlist=passwords.txt hashes.txt",
+                    "john --format=md5 hashes.txt",
+                    "john --show hashes.txt"
+                ]
+            },
+            {
+                id: 6,
+                name: "Aircrack-ng",
+                category: "wireless",
+                categoryName: "Wireless Attacks",
+                description: "Suite of tools for assessing WiFi network security, including monitoring and password cracking.",
+                difficulty: "Intermediate",
+                lastUpdated: "2023-06-05",
+                installation: "sudo apt install aircrack-ng",
+                usage: "aircrack-ng [options] capturefile",
+                examples: [
+                    "airmon-ng start wlan0",
+                    "airodump-ng wlan0mon",
+                    "aircrack-ng -w wordlist.txt capture.cap"
+                ]
+            },
+            {
+                id: 7,
+                name: "Hydra",
+                category: "password",
+                categoryName: "Password Attacks",
+                description: "Parallelized login cracker which supports numerous protocols to attack.",
+                difficulty: "Beginner",
+                lastUpdated: "2023-05-25",
+                installation: "sudo apt install hydra",
+                usage: "hydra [options] target service",
+                examples: [
+                    "hydra -l user -P passlist.txt ssh://192.168.1.1",
+                    "hydra -L users.txt -p password ftp://192.168.1.1",
+                    "hydra -l admin -P rockyou.txt http-get://192.168.1.1/admin"
+                ]
+            },
+            {
+                id: 8,
+                name: "Sqlmap",
+                category: "web",
+                categoryName: "Web Applications",
+                description: "Automatic SQL injection and database takeover tool.",
+                difficulty: "Advanced",
+                lastUpdated: "2023-06-12",
+                installation: "sudo apt install sqlmap",
+                usage: "sqlmap [options] -u target",
+                examples: [
+                    "sqlmap -u 'http://site.com/page.php?id=1'",
+                    "sqlmap -u 'http://site.com/page.php?id=1' --dbs",
+                    "sqlmap -u 'http://site.com/page.php?id=1' -D dbname --tables"
+                ]
+            }
+        ];
+
+        // DOM Elements
+        const loadingScreen = document.getElementById('loading-screen');
+        const progressBar = document.getElementById('progress-bar');
+        const body = document.body;
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const exploreBtn = document.getElementById('explore-btn');
+        const authModal = document.getElementById('auth-modal');
+        const closeModal = document.querySelector('.close-modal');
+        const showSignup = document.getElementById('show-signup');
+        const showLogin = document.getElementById('show-login');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const toolsContainer = document.getElementById('tools-container');
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        const toolDetailView = document.getElementById('tool-detail-view');
+        const backToTools = document.getElementById('back-to-tools');
+        const toolsSection = document.getElementById('tools');
+        const homeLink = document.getElementById('home-link');
+
+        // Current state
+        let currentCategory = 'all';
+        let displayedTools = 6;
+        let currentToolDetail = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Loading screen animation
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = progress + '%';
+                
+                if (progress === 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            body.style.display = 'block';
+                            renderTools();
+                        }, 1000);
+                    }, 500);
+                }
+            }, 200);
+            
+            // Event listeners
+            loginBtn.addEventListener('click', () => {
+                authModal.style.display = 'flex';
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            });
+            
+            signupBtn.addEventListener('click', () => {
+                authModal.style.display = 'flex';
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            });
+            
+            exploreBtn.addEventListener('click', () => {
+                window.location.href = '#tools';
+            });
+            
+            closeModal.addEventListener('click', () => {
+                authModal.style.display = 'none';
+            });
+            
+            showSignup.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            });
+            
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            authModal.addEventListener('click', (e) => {
+                if (e.target === authModal) {
+                    authModal.style.display = 'none';
+                }
+            });
+            
+            // Tool category filtering
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentCategory = this.dataset.category;
+                    displayedTools = 6; // Reset to initial count
+                    renderTools();
+                    toolsSection.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+            
+            // Load more tools
+            loadMoreBtn.addEventListener('click', () => {
+                displayedTools += 6;
+                renderTools();
+            });
+            
+            // Back to tools list
+            backToTools.addEventListener('click', (e) => {
+                e.preventDefault();
+                toolDetailView.style.display = 'none';
+                toolsSection.style.display = 'block';
+            });
+            
+            // Home link
+            homeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // Login form submission
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                // Basic validation
+                if (email && password) {
+                    alert(`Login successful for ${email}`);
+                    authModal.style.display = 'none';
+                    loginBtn.textContent = 'My Account';
+                } else {
+                    alert('Please enter both email and password');
+                }
+            });
+            
+            // Signup form submission
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirm = document.getElementById('signup-confirm').value;
+                
+                // Basic validation
+                if (!name || !email || !password || !confirm) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                if (password !== confirm) {
+                    alert('Passwords do not match');
+                    return;
+                }
+                
+                alert(`Account created for ${name} (${email})`);
+                authModal.style.display = 'none';
+                loginBtn.textContent = 'My Account';
+            });
+        });
+        
+        // Render tools based on current category
+        function renderTools() {
+            toolsContainer.innerHTML = '';
+            
+            const filteredTools = currentCategory === 'all' 
+                ? toolsData 
+                : toolsData.filter(tool => tool.category === currentCategory);
+            
+            const toolsToShow = filteredTools.slice(0, displayedTools);
+            
+            if (toolsToShow.length === 0) {
+                toolsContainer.innerHTML = '<p>No tools found in this category.</p>';
+                loadMoreBtn.style.display = 'none';
+                return;
+            }
+            
+            toolsToShow.forEach(tool => {
+                const toolCard = document.createElement('div');
+                toolCard.className = 'tool-card';
+                toolCard.innerHTML = `
+                    <div class="tool-img">${tool.name}</div>
+                    <div class="tool-content">
+                        <span class="tool-category">${tool.categoryName}</span>
+                        <h3>${tool.name}</h3>
+                        <p>${tool.description}</p>
+                        <button class="btn view-tool-btn" data-id="${tool.id}">Learn</button>
+                    </div>
+                `;
+                toolsContainer.appendChild(toolCard);
+            });
+            
+            // Add event listeners to the new tool buttons
+            document.querySelectorAll('.view-tool-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const toolId = parseInt(e.target.dataset.id);
+                    showToolDetail(toolId);
+                });
+            });
+            
+            // Show/hide load more button
+            loadMoreBtn.style.display = displayedTools >= filteredTools.length ? 'none' : 'block';
+        }
+        
+        // Show tool detail view
+        function showToolDetail(toolId) {
+            const tool = toolsData.find(t => t.id === toolId);
+            if (!tool) return;
+            
+            currentToolDetail = tool;
+            
+            // Update tool detail view
+            document.getElementById('tool-detail-name').textContent = tool.name;
+            document.getElementById('tool-detail-category').textContent = tool.categoryName;
+            document.getElementById('tool-detail-difficulty').textContent = tool.difficulty;
+            document.getElementById('tool-detail-updated').textContent = tool.lastUpdated;
+            document.getElementById('tool-detail-description').textContent = tool.description;
+            document.getElementById('tool-detail-installation').textContent = tool.installation;
+            document.getElementById('tool-detail-usage').textContent = tool.usage;
+            
+            const examplesContainer = document.getElementById('tool-detail-examples');
+            examplesContainer.innerHTML = '';
+            tool.examples.forEach(example => {
+                const pre = document.createElement('pre');
+                pre.innerHTML = `<code>${example}</code>`;
+                examplesContainer.appendChild(pre);
+            });
+            
+            // Add event listener to start lab button
+            document.getElementById('start-lab-btn').addEventListener('click', () => {
+                alert(`Starting lab environment for ${tool.name}`);
+            });
+            
+            // Switch views
+            toolsSection.style.display = 'none';
+            toolDetailView.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body
